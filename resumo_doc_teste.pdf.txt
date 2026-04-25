@@ -1,0 +1,23 @@
+Este resumo destaca as principais regras de jogabilidade em um sistema de RPG (Role-Playing Game):
+
+1. **Rotação de Ação**: Jogadores rogam para determinar se suas ações são desafiadoras e possuem risco.
+
+2. **Posição e Efeito**:
+   - Posição controlada: Menor risco.
+   - Posição arriscada: Medio risco.
+   - Posição desesperada: Maior risco.
+
+3. **Consequência da Rola**:
+   - Sucesso completo: Sem complicações.
+   - Sucesso parcial: Complicação.
+   - Resultado ruim: Falta de êxito e complicações.
+
+4. **Rotação de Sorte**: Determina a força de características como moral ou dureza.
+
+5. **Rotação de Resistência**: Ajuda a bloquear consequências ruins.
+
+6. **Flashbacks**: Permite rolar ações anteriores que afetam a situação atual.
+
+7. **Criando Personagens**: Oferece nomes e sobrenomes para criar personagens.
+
+Essas regras fornecem um framework básico para jogar RPGs, incluindo como rolar ações, lidar com riscos, resolver problemas e desenvolver personagens.
