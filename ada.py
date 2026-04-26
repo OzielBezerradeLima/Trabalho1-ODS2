@@ -12,7 +12,7 @@ from pdf.images import extract_images
 
 # Importações de IA
 from llm.model import load_llm
-from llm.chat import generate_summary
+from llm.chat import generate_rag_answer
 
 def print_header():
     print("\n" + "*" * 40)

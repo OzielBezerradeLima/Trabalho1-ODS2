@@ -1,6 +1,6 @@
 import os
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
 
 # Local onde o banco de dados será salvo
 DB_DIRECTORY = "./db/chroma_db"

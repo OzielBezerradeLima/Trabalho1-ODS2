@@ -1,7 +1,11 @@
 # Ignora a pasta de imagens extraídas do PDF
 imagens/*
+
 # Mantém a pasta no GitHub se houver um .gitkeep
 !imagens/.gitkeep
+
+# Ignorar o banco de dados
+db/
 
 # Ignora arquivos de saída e relatórios gerados pelo programa
 resumo_*.txt
