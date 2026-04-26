@@ -1,5 +1,5 @@
-from model import load_llm
-from chat import generate_rag_answer
+from backend.llm.model import load_llm
+from backend.llm.chat import generate_rag_answer
 
 # Carrega o modelo
 model, tokenizer, device = load_llm()

@@ -7,6 +7,7 @@ import argparse
 
 def get_args():
     """
+    LEGADO: mantido apenas para compatibilidade.
     Analisa os argumentos da linha de comando.
     Retorna:
         args: Os argumentos analisados com os atributos .pdf_path e .save.

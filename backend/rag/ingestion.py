@@ -1,9 +1,15 @@
-from pdf.extractor import extract_data_from_pdf
+from backend.pdf.extractor import extract_data_from_pdf
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from rag.database import get_vector_db
+from backend.rag.database import get_vector_db
 
-def processar_documento(pdf_path):
+def processar_documento(
+    pdf_path,
+    persist_directory=None,
+    collection_name="default",
+    chunk_size=1000,
+    chunk_overlap=100
+):
     print(f"Iniciando processamento de: {pdf_path}")
     
     # Extração 
@@ -17,8 +23,8 @@ def processar_documento(pdf_path):
     
     # Chunking 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
         separators=["\n\n", "\n", ".", " ", ""]
     )
     
@@ -26,7 +32,16 @@ def processar_documento(pdf_path):
     print(f"📄 Texto dividido em {len(chunks)} pedaços.")
     
     # Armazenamento no Banco Vetorial
-    get_vector_db(chunks=chunks)
+    vector_db = get_vector_db(
+        chunks=chunks,
+        persist_directory=persist_directory or "./db/chroma_db",
+        collection_name=collection_name
+    )
+    return {
+        "vector_db": vector_db,
+        "chunks": chunks,
+        "raw_text": texto_bruto
+    }
 
 if __name__ == "__main__":
     # Teste rápido com seu arquivo

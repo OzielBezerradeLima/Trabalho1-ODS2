@@ -1,0 +1,12 @@
+[
+  {
+    "question": "Quais sao os niveis de carga mencionados no documento?",
+    "expected_answer": "O documento descreve os niveis de carga e suas caracteristicas operacionais.",
+    "expected_context_terms": ["niveis de carga", "caracteristicas"]
+  },
+  {
+    "question": "Qual criterio principal e usado para classificar os niveis?",
+    "expected_answer": "A classificacao dos niveis considera variacoes de demanda e faixa de operacao.",
+    "expected_context_terms": ["classificacao", "demanda", "faixa"]
+  }
+]
