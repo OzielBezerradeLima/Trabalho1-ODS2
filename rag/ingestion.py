@@ -1,4 +1,4 @@
-from pdf.extractor import extract_text_from_pdf # Ajuste o nome da sua função aqui
+from pdf.extractor import extract_data_from_pdf
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from rag.database import get_vector_db
@@ -6,11 +6,16 @@ from rag.database import get_vector_db
 def processar_documento(pdf_path):
     print(f"Iniciando processamento de: {pdf_path}")
     
-    # 1. Extração (Usando seu código existente)
-    texto_bruto = extract_text_from_pdf(pdf_path)
+    # Extração 
+    dados_pdf = extract_data_from_pdf(pdf_path)
+
+    if dados_pdf is None:
+        print("Falha ao ler o PDF.")
+        return
+        
+    _, _, texto_bruto = dados_pdf
     
-    # 2. Chunking (Divisão em pedaços)
-    # chunk_size de 1000 com overlap de 100 é um bom padrão para ODS
+    # Chunking 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=100,
@@ -20,7 +25,7 @@ def processar_documento(pdf_path):
     chunks = text_splitter.split_text(texto_bruto)
     print(f"📄 Texto dividido em {len(chunks)} pedaços.")
     
-    # 3. Armazenamento no Banco Vetorial
+    # Armazenamento no Banco Vetorial
     get_vector_db(chunks=chunks)
 
 if __name__ == "__main__":
