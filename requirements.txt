@@ -1,9 +1,24 @@
+# Core PDF and NLP
 pymupdf>=1.24.0
 numpy>=1.26.0
+
+# LLM stack
+torch>=2.3.0
 transformers>=4.40.0
 accelerate>=0.30.0
-torch>=2.3.0 --index-url https://download.pytorch.org/whl/cu121
-langchain
-langchain-ollama
-langchain-text-splitters
-langchain-chroma
+
+# RAG stack
+langchain>=0.2.0
+langchain-ollama>=0.1.0
+langchain-text-splitters>=0.2.0
+langchain-chroma>=0.1.0
+
+# API backend
+fastapi>=0.115.0
+uvicorn>=0.30.0
+python-multipart>=0.0.9
+
+# Evaluation
+datasets>=2.21.0
+ragas>=0.2.0
+langchain-openai>=0.2.0

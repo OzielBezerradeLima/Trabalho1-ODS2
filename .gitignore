@@ -47,6 +47,20 @@ dist/
 *.log
 pip-log.txt
 
+# --- FRONTEND REACT / NODE ---
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- ARQUIVOS DE AMBIENTE ---
+
+.env
+.env.*
+!.env.example
+
 # --- FRAMEWORKS (STREAMLIT / FLASK / DJANGO) ---
 
 .streamlit/secrets.toml

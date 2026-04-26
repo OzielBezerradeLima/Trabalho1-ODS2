@@ -1,6 +1,6 @@
-from rag.database import get_vector_db
-from llm.model import load_llm
-from llm.chat import generate_rag_answer
+from backend.rag.database import get_vector_db
+from backend.llm.model import load_llm
+from backend.llm.chat import generate_rag_answer
 
 def main():
     print("=== INICIANDO TESTE DE INTEGRAÇÃO RAG ===")
@@ -14,7 +14,7 @@ def main():
     db = get_vector_db()
     
     if not db:
-        print("Erro: Banco de dados não encontrado. Rode rag/ingestion.py primeiro.")
+        print("Erro: Banco de dados não encontrado. Rode backend/rag/ingestion.py primeiro.")
         return
 
     # Busca os 5 pedaços mais relevantes para a pergunta

@@ -1,4 +1,4 @@
-from rag.database import get_vector_db
+from backend.rag.database import get_vector_db
 
 # Carrega o banco
 db = get_vector_db()
