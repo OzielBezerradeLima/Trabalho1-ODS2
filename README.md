@@ -23,10 +23,10 @@
 
 ## Limitacoes conhecidas
 
-- A qualidade da resposta depende fortemente da qualidade do PDF e da recuperacao dos chunks.
-- Em documentos longos ou muito heterogeneos, o chunking pode recuperar trechos pouco relevantes.
+- A qualidade da resposta depende fortemente da qualidade do PDF e da recuperação dos chunks.
+- Em documentos longos ou muito heterogêneos, o chunking pode recuperar trechos pouco relevantes.
 - O desempenho depende do hardware local, principalmente na etapa de geracao do LLM.
-- A avaliacao automatica e util para comparacao, mas ainda deve ser complementada com analise manual de casos de erro.
+- A avaliacao automatica e util para comparação, mas ainda deve ser complementada com análise manual de casos de erro.
 
 ## 1) Criar ambiente virtual e instalar dependencias
 
@@ -143,6 +143,28 @@ No Linux ou macOS, usando a venv do projeto:
 ```
 
 O processo gera um CSV com as metricas por pergunta e imprime no terminal os resumos medios de precision, recall, F1 e MRR para resposta e recuperacao.
+
+Para incluir as metricas do RAGAS, execute o mesmo comando com a flag `--use-ragas` e garanta que o Ollama esteja rodando com os modelos locais disponiveis. Nesse modo, a avaliacao passa a medir:
+
+- Faithfulness
+- Answer relevancy
+- Context precision
+- Context recall
+
+Exemplo:
+
+```powershell
+python avaliar.py --pdf caminho/do/documento.pdf --dataset backend/evaluation/dataset_exemplo.json --output backend/evaluation/results.csv --top-k 5 --use-ragas
+```
+
+Antes de rodar, voce pode preparar os modelos locais assim:
+
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2:3b-instruct
+```
+
+Se quiser usar outro modelo de juiz, informe `--ragas-llm-model` e `--ragas-embedding-model` no comando, ou configure `RAGAS_LLM_MODEL` e `RAGAS_EMBEDDING_MODEL` no ambiente.
 
 ### Exemplo de execucao validada
 

@@ -24,6 +24,16 @@ def parse_args():
     parser.add_argument("--output", default="backend/evaluation/results.csv", help="Arquivo CSV de saida")
     parser.add_argument("--top-k", type=int, default=5, help="Quantidade de chunks recuperados")
     parser.add_argument("--use-ragas", action="store_true", help="Ativa avaliacao adicional com RAGAS")
+    parser.add_argument(
+        "--ragas-llm-model",
+        default=os.getenv("RAGAS_LLM_MODEL", "llama3.2:3b-instruct"),
+        help="Modelo Ollama usado como juiz do RAGAS",
+    )
+    parser.add_argument(
+        "--ragas-embedding-model",
+        default=os.getenv("RAGAS_EMBEDDING_MODEL", "nomic-embed-text"),
+        help="Modelo de embeddings Ollama usado pelo RAGAS",
+    )
     return parser.parse_args()
 
 
@@ -32,18 +42,39 @@ def load_dataset(dataset_path):
         return json.load(file)
 
 
-def optional_ragas_scores(rows):
+def extract_ragas_scores(result_frame):
+    metric_columns = [
+        "faithfulness",
+        "answer_relevancy",
+        "context_precision",
+        "context_recall",
+    ]
+
+    rows_scores = []
+    for _, row in result_frame.iterrows():
+        row_scores = {}
+        for column in metric_columns:
+            row_scores[f"ragas_{column}"] = float(row[column])
+        rows_scores.append(row_scores)
+
+    averages = {}
+    for column in metric_columns:
+        averages[f"ragas_{column}_mean"] = float(result_frame[column].mean())
+
+    return {
+        "rows": rows_scores,
+        "averages": averages,
+    }
+
+
+def optional_ragas_scores(rows, llm_model, embedding_model):
     try:
         from datasets import Dataset
-        from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+        from langchain_ollama import ChatOllama, OllamaEmbeddings
         from ragas import evaluate
         from ragas.metrics import answer_relevancy, context_precision, context_recall, faithfulness
     except Exception as error:
         print(f"RAGAS indisponivel neste ambiente: {error}")
-        return {}
-
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY nao definido. Pulando avaliacao RAGAS.")
         return {}
 
     ragas_dataset = Dataset.from_dict(
@@ -55,22 +86,21 @@ def optional_ragas_scores(rows):
         }
     )
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    llm = ChatOllama(model=llm_model, temperature=0)
+    embeddings = OllamaEmbeddings(model=embedding_model)
 
-    result = evaluate(
-        ragas_dataset,
-        metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
-        llm=llm,
-        embeddings=embeddings,
-    )
+    try:
+        result = evaluate(
+            ragas_dataset,
+            metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+            llm=llm,
+            embeddings=embeddings,
+        )
+    except Exception as error:
+        print(f"Falha ao executar RAGAS com Ollama local: {error}")
+        return {}
 
-    return {
-        "ragas_faithfulness": float(result["faithfulness"]),
-        "ragas_answer_relevancy": float(result["answer_relevancy"]),
-        "ragas_context_precision": float(result["context_precision"]),
-        "ragas_context_recall": float(result["context_recall"]),
-    }
+    return extract_ragas_scores(result.to_pandas())
 
 
 def run_evaluation(args):
@@ -134,7 +164,7 @@ def run_evaluation(args):
             }
         )
 
-    ragas_scores = optional_ragas_scores(rows) if args.use_ragas else {}
+    ragas_scores = optional_ragas_scores(rows, args.ragas_llm_model, args.ragas_embedding_model) if args.use_ragas else {}
 
     with open(args.output, "w", newline="", encoding="utf-8") as csv_file:
         fieldnames = [
@@ -152,14 +182,22 @@ def run_evaluation(args):
         ]
 
         if ragas_scores:
-            fieldnames.extend(list(ragas_scores.keys()))
+            fieldnames.extend(
+                [
+                    "ragas_faithfulness",
+                    "ragas_answer_relevancy",
+                    "ragas_context_precision",
+                    "ragas_context_recall",
+                ]
+            )
 
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
 
-        for row in rows:
+        for index, row in enumerate(rows):
             row_data = dict(row)
-            row_data.update(ragas_scores)
+            if ragas_scores:
+                row_data.update(ragas_scores["rows"][index])
             writer.writerow(row_data)
 
     averages = {
@@ -183,6 +221,10 @@ def run_evaluation(args):
     print(f"Retrieval MRR medio: {averages['retrieval_mrr']:.4f}")
     if ragas_scores:
         print("RAGAS habilitado com metricas adicionais.")
+        print(f"RAGAS Faithfulness medio: {ragas_scores['averages']['ragas_faithfulness_mean']:.4f}")
+        print(f"RAGAS Answer Relevancy medio: {ragas_scores['averages']['ragas_answer_relevancy_mean']:.4f}")
+        print(f"RAGAS Context Precision medio: {ragas_scores['averages']['ragas_context_precision_mean']:.4f}")
+        print(f"RAGAS Context Recall medio: {ragas_scores['averages']['ragas_context_recall_mean']:.4f}")
     print(f"CSV salvo em: {args.output}")
 
 
