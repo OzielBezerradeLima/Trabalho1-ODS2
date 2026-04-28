@@ -2,7 +2,12 @@ import argparse
 import csv
 import json
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
+
+if __package__ is None or __package__ == "":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.llm.chat import generate_rag_answer
 from backend.llm.model import load_llm
@@ -158,14 +163,22 @@ def run_evaluation(args):
             writer.writerow(row_data)
 
     averages = {
+        "answer_precision": sum(row["answer_precision"] for row in rows) / len(rows),
+        "answer_recall": sum(row["answer_recall"] for row in rows) / len(rows),
         "answer_f1": sum(row["answer_f1"] for row in rows) / len(rows),
+        "retrieval_precision": sum(row["retrieval_precision"] for row in rows) / len(rows),
+        "retrieval_recall": sum(row["retrieval_recall"] for row in rows) / len(rows),
         "retrieval_f1": sum(row["retrieval_f1"] for row in rows) / len(rows),
         "retrieval_mrr": sum(row["retrieval_mrr"] for row in rows) / len(rows),
     }
 
     print("=== RESUMO DA AVALIACAO ===")
     print(f"Perguntas avaliadas: {len(rows)}")
+    print(f"Answer Precision medio: {averages['answer_precision']:.4f}")
+    print(f"Answer Recall medio: {averages['answer_recall']:.4f}")
     print(f"Answer F1 medio: {averages['answer_f1']:.4f}")
+    print(f"Retrieval Precision medio: {averages['retrieval_precision']:.4f}")
+    print(f"Retrieval Recall medio: {averages['retrieval_recall']:.4f}")
     print(f"Retrieval F1 medio: {averages['retrieval_f1']:.4f}")
     print(f"Retrieval MRR medio: {averages['retrieval_mrr']:.4f}")
     if ragas_scores:

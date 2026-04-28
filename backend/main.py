@@ -1,9 +1,14 @@
 import secrets
+import sys
 from typing import Dict
+from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+if __package__ is None or __package__ == "":
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from backend.rag.service import answer_question, index_uploaded_pdf
 
