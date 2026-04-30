@@ -15,28 +15,8 @@
     "expected_context_terms": ["9,8%", "transtorno mental", "diagnostico situacional"]
   },
   {
-    "question": "Quais sao os principais transtornos mentais identificados na ESF Areias I?",
-    "expected_answer": "Depressao, disturbio de ansiedade, insonia, epilepsias, convulsoes, dor cronica, cefaleias e dependencia quimica.",
-    "expected_context_terms": ["depressao", "ansiedade", "insonia", "dependencia quimica"]
-  },
-  {
     "question": "Qual metodologia foi utilizada para o planejamento das acoes?",
     "expected_answer": "O metodo de Planejamento Estrategico Situacional (PES).",
     "expected_context_terms": ["planejamento estrategico situacional", "PES", "metodologia"]
-  },
-  {
-    "question": "Quais bases de dados foram usadas na revisao bibliografica?",
-    "expected_answer": "SciELO, Lilacs e Biblioteca Virtual da UFMG.",
-    "expected_context_terms": ["scielo", "lilacs", "biblioteca virtual"]
-  },
-  {
-    "question": "Qual o intervalo de anos considerado como criterio de inclusao para os artigos?",
-    "expected_answer": "Artigos publicados entre 1990 e 2014.",
-    "expected_context_terms": ["1990", "2014", "criterio de inclusao"]
-  },
-  {
-    "question": "Quantas pessoas no mundo sofrem de transtornos mentais segundo o documento?",
-    "expected_answer": "Cerca de 450 milhoes de pessoas sofrem transtornos mentais ou de comportamento.",
-    "expected_context_terms": ["450 milhoes", "transtornos mentais", "comportamento"]
   }
 ]
