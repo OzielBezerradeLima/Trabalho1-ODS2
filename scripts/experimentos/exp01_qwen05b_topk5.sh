@@ -2,7 +2,7 @@
 # Experimento 01: qwen2.5:0.5b com top-k 5 (baseline rapido)
 .venv/bin/python avaliar.py \
   --pdf backend/pdf/artigoteste.pdf \
-  --dataset backend/evaluation/dataset_exemplo.json \
+  --dataset backend/evaluation/dataset_rapido.json \
   --output results/exp01_qwen05b_topk5.csv \
   --top-k 5 \
   --use-ragas \

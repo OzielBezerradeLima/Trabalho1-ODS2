@@ -373,25 +373,31 @@ Cada execução gera `results/<exp>.csv` (métricas) e `results/<exp>.log` (saí
 
 ### Resultados — comparação de modelos juiz (dataset 4 perguntas)
 
-Todos com top-k 5, mesmo dataset (`dataset_rapido.json`). Métricas idênticas quando o juiz não influencia (geração e retrieval são determinísticos).
+Todos com top-k 5, mesmo dataset (`dataset_rapido.json`). Métricas clássicas idênticas entre experimentos (geração e retrieval são determinísticos e independem do juiz).
 
 | Métrica | exp01 (qwen 0.5b) | exp02 (qwen 1.5b) | exp03 (llama3.2 3.2B) |
 |---|---|---|---|
-| **Duração** | 17min | 23min | _em execução_ |
+| **Duração** | 17min | 23min | **38min** |
 | Answer F1 | 0.39 | 0.39 | 0.39 |
 | Retrieval F1 | 0.47 | 0.47 | 0.47 |
 | Retrieval MRR | 0.63 | 0.63 | 0.63 |
-| RAGAS Faithfulness | 1.00 ✅ | 1.00 ✅ | _em execução_ |
-| **RAGAS Answer Relevancy** | 0.15 ⚠️ | **0.58** ↑ | _em execução_ |
-| RAGAS Context Precision | 1.00 ✅ | 0.95 | _em execução_ |
-| RAGAS Context Recall | 1.00 ✅ | 1.00 ✅ | _em execução_ |
+| RAGAS Faithfulness | 1.00 ✅ | 1.00 ✅ | **0.81** ⚠️ |
+| **RAGAS Answer Relevancy** | 0.15 ⚠️ | **0.58** ↑ | **0.60** ↑ |
+| RAGAS Context Precision | 1.00 ✅ | 0.95 | 0.99 |
+| RAGAS Context Recall | 1.00 ✅ | 1.00 ✅ | 1.00 ✅ |
 
 **Insights da comparação:**
 
 - **Métricas clássicas são iguais entre experimentos** — não dependem do juiz, apenas do gerador (Qwen2.5-1.5B HF) que é o mesmo em todos.
-- **Faithfulness e Context Recall são robustas com qualquer juiz** — qwen 0.5b já dá resultados confiáveis.
-- **Answer Relevancy precisa de juiz ≥ 1.5B** — qwen 0.5b dá falsos negativos (0.15 vs 0.58 do 1.5b para o mesmo pipeline).
-- **Trade-off velocidade vs qualidade**: qwen 0.5b é 35% mais rápido que 1.5b. Para tuning iterativo (variar prompt/chunks), use 0.5b. Para avaliação final, use 1.5b ou maior.
+- **Answer Relevancy precisa de juiz ≥ 1.5B** — qwen 0.5b dá falsos negativos (0.15). Tanto qwen 1.5b (0.58) quanto llama3.2 (0.60) convergem para um valor similar e mais confiável.
+- **Faithfulness inesperadamente cai com llama3.2** (0.81 vs 1.00 nos qwen) — investigando os logs, vimos `OUTPUT_PARSING_FAILURE` ocasional no llama3.2: o modelo às vezes retorna JSON malformado para o RAGAS, e métricas com parse falho viram 0. **Conclusão**: modelos maiores nem sempre são melhores juízes — qwen 2.5 segue melhor o schema esperado pelo RAGAS.
+- **Context Precision/Recall são robustas com qualquer juiz** ≥ 0.5B.
+- **Trade-off velocidade vs qualidade**:
+  - qwen 0.5b: 17min, mas Answer Relevancy não é confiável
+  - qwen 1.5b: 23min, **melhor custo-benefício** — métricas confiáveis, sem parsing failures
+  - llama3.2 3.2B: 38min, mais lento e ainda com parsing issues — não compensa neste setup
+
+**Recomendação prática**: usar **qwen2.5:1.5b** como juiz padrão para avaliações. Reservar qwen2.5:0.5b apenas para tuning rápido onde só importa Faithfulness/Context.
 
 ### Adicionar novo experimento
 

@@ -2,7 +2,7 @@
 # Experimento 02: qwen2.5:1.5b com top-k 5 (juiz mais robusto)
 .venv/bin/python avaliar.py \
   --pdf backend/pdf/artigoteste.pdf \
-  --dataset backend/evaluation/dataset_exemplo.json \
+  --dataset backend/evaluation/dataset_rapido.json \
   --output results/exp02_qwen15b_topk5.csv \
   --top-k 5 \
   --use-ragas \
