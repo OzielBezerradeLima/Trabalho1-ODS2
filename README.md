@@ -1,181 +1,172 @@
-# Trabalho1-ODS2 - Frontend React + Backend FastAPI
+# Trabalho1-ODS2
 
-## Arquitetura
+RAG local para perguntas sobre PDFs. Frontend React, backend FastAPI, embeddings via Ollama, base vetorial Chroma e LLM aberto local — tudo executável offline depois do setup inicial.
 
-- Frontend: React (pasta `frontend/`)
-- Backend: FastAPI (`backend/main.py`)
-- RAG: pipeline Python existente em `rag/`, `llm/`, `pdf/`
+## Como funciona
 
-## Visao geral do fluxo
+1. O usuário envia um PDF pela interface ou pela API.
+2. O backend extrai o texto, faz chunking e gera embeddings via Ollama (`nomic-embed-text`).
+3. Os chunks são indexados no Chroma (banco vetorial local).
+4. Na pergunta, o sistema recupera os trechos semanticamente mais próximos.
+5. O contexto recuperado é enviado para um LLM local (via Hugging Face) que gera a resposta.
 
-1. O usuario envia um PDF pela interface web ou pela API.
-2. O backend extrai o texto do documento e faz o chunking em blocos menores.
-3. Os chunks sao transformados em embeddings com Ollama e armazenados no banco vetorial Chroma.
-4. Na pergunta do usuario, o sistema recupera os trechos semanticamente mais proximos.
-5. O contexto recuperado e enviado para um LLM local, que gera a resposta final.
+## Estrutura
 
-## Decisoes tecnicas
+| Componente | Local | Tecnologia |
+|---|---|---|
+| Frontend | `frontend/` | React |
+| API | `backend/main.py` | FastAPI |
+| Pipeline RAG | `backend/rag/`, `backend/llm/`, `backend/pdf/` | Chroma + Ollama + HF |
+| Avaliação | `backend/evaluation/` | métricas próprias + RAGAS |
 
-- Uso de Chroma como banco vetorial local para simplificar persistencia e reproducibilidade.
-- Uso de Ollama para embeddings, evitando dependencia obrigatoria de APIs externas.
-- Uso de um LLM local via Hugging Face para manter o projeto executavel offline depois da configuracao inicial.
-- Exposicao de uma API FastAPI simples para facilitar integracao com o frontend e com testes.
+## Limitações conhecidas
 
-## Limitacoes conhecidas
+- A qualidade depende fortemente do PDF e da recuperação dos chunks.
+- Documentos longos ou heterogêneos podem trazer trechos pouco relevantes.
+- Desempenho depende do hardware local (geração do LLM é o gargalo).
+- Avaliação automática deve ser complementada com análise manual de erros.
 
-- A qualidade da resposta depende fortemente da qualidade do PDF e da recuperação dos chunks.
-- Em documentos longos ou muito heterogêneos, o chunking pode recuperar trechos pouco relevantes.
-- O desempenho depende do hardware local, principalmente na etapa de geracao do LLM.
-- A avaliacao automatica e util para comparação, mas ainda deve ser complementada com análise manual de casos de erro.
+## Requisitos
 
-## 1) Criar ambiente virtual e instalar dependencias
+- Python 3.11+
+- Node.js (para o frontend)
+- Ollama instalado e rodando
 
-No Windows (PowerShell), execute os comandos abaixo na raiz do projeto:
+## Setup
 
-```powershell
-cd C:\Users\User\Documents\Projetos\Trabalho1-ODS2
+### 1. Ambiente virtual e dependências
+
+Linux / macOS:
+
+```bash
+python3.11 -m venv .venv
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install -r requirements.txt
 ```
 
-Criar o ambiente virtual (`.venv`):
+Windows (PowerShell):
 
 ```powershell
 py -3.11 -m venv .venv
-```
-
-Ativar o ambiente virtual:
-
-```powershell
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-Se aparecer erro de politica de execucao no PowerShell, rode uma vez e tente ativar novamente:
+Se o PowerShell bloquear a ativação:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 ```
 
-Atualizar o `pip` e instalar os pacotes do projeto:
+### 2. Modelos do Ollama
 
-```powershell
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+Mínimo para rodar a aplicação:
+
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2
 ```
 
-Opcional: validar se o ambiente foi ativado e os pacotes foram instalados:
+Para os experimentos (opcional), adicione:
 
-```powershell
-python --version
-pip list
+```bash
+ollama pull qwen2.5:0.5b
+ollama pull qwen2.5:1.5b
 ```
 
-## 2) Iniciar backend da API
+Conferir o que está instalado: `ollama list`
 
-```powershell
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
-```
+## Rodar
 
-No Linux ou macOS, usando a venv do projeto:
+### Backend
+
+Linux / macOS:
 
 ```bash
 .venv/bin/uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-## 3) Garantir Ollama e embeddings
+Windows:
 
 ```powershell
-ollama pull nomic-embed-text
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-## 4) Rodar frontend React
+### Frontend
 
-```powershell
+```bash
 cd frontend
-copy .env.example .env
+cp .env.example .env   # Windows: copy .env.example .env
 npm install
 npm run dev
 ```
 
-Frontend em `http://127.0.0.1:5173`.
-
-## 5) Build do frontend
-
-```powershell
-cd frontend
-npm run build
-```
-
-## Estrutura recomendada
-
-- `frontend/`: interface React principal
-- `backend/main.py`: backend FastAPI
-- `rag/`: pipeline de ingestao e recuperacao
-
-## Endpoints principais
+### Endpoints
 
 - `GET /health`
 - `POST /upload-pdf`
 - `POST /chat`
 
-## Testes
+## Avaliação
 
-```powershell
-pytest -q evaluation/test_metrics.py
-```
+O script `avaliar.py` indexa um PDF, roda perguntas de um dataset JSON e gera um CSV com métricas.
 
-No Linux ou macOS, usando a venv do projeto:
+Métricas básicas (rápido, sem RAGAS):
 
 ```bash
-.venv/bin/pytest -q backend/evaluation/test_metrics.py
+.venv/bin/python avaliar.py --pdf backend/pdf/artigoteste.pdf --dataset backend/evaluation/dataset_exemplo.json --output results.csv --top-k 5
 ```
 
-## Avaliacao com metricas
-
-Para executar a avaliacao do RAG com calculo de metricas de resposta e recuperacao, use o atalho da raiz do projeto:
-
-```powershell
-python avaliar.py --pdf caminho/do/documento.pdf --dataset backend/evaluation/dataset_exemplo.json --output backend/evaluation/results.csv --top-k 5
-```
-
-No Linux ou macOS, usando a venv do projeto:
+Com RAGAS local (juiz via Ollama):
 
 ```bash
-.venv/bin/python avaliar.py --pdf caminho/do/documento.pdf --dataset backend/evaluation/dataset_exemplo.json --output backend/evaluation/results.csv --top-k 5
+.venv/bin/python avaliar.py --pdf backend/pdf/artigoteste.pdf --dataset backend/evaluation/dataset_exemplo.json --output results.csv --top-k 5 --use-ragas --ragas-llm-model llama3.2:latest --ragas-timeout 600
 ```
 
-O processo gera um CSV com as metricas por pergunta e imprime no terminal os resumos medios de precision, recall, F1 e MRR para resposta e recuperacao.
+Se o juiz local estiver lento ou indisponível, as métricas RAGAS aparecem como `indisponivel` — o CSV básico ainda é gerado.
 
-Para incluir as metricas do RAGAS, execute o mesmo comando com a flag `--use-ragas` e garanta que o Ollama esteja rodando com os modelos locais disponiveis. Nesse modo, a avaliacao passa a medir:
+### Flags úteis
 
-- Faithfulness
-- Answer relevancy
-- Context precision
-- Context recall
+- `--top-k` — chunks recuperados por pergunta; afeta precision/recall do retrieval.
+- `--ragas-llm-model` — modelo Ollama usado como juiz; precisa existir em `ollama list`.
+- `--ragas-timeout` — segundos por operação; modelos maiores precisam de mais.
+- `--ragas-max-workers` (default `1`) — manter `1` em CPU/Ollama local; aumentar só com GPU.
+- `--ragas-max-retries` (default `2`) — tentativas antes de marcar como `indisponivel`.
 
-Exemplo:
+## Experimentos
 
-```powershell
-python avaliar.py --pdf caminho/do/documento.pdf --dataset backend/evaluation/dataset_exemplo.json --output backend/evaluation/results.csv --top-k 5 --use-ragas
-```
+Para comparar modelos juiz e configurações de retrieval, há scripts pré-prontos em `scripts/experimentos/`. Cada experimento usa o mesmo `avaliar.py` com flags diferentes e gera um CSV em `results/`.
 
-Antes de rodar, voce pode preparar os modelos locais assim:
+Rodar um experimento:
 
 ```bash
-ollama pull nomic-embed-text
-ollama pull llama3.2:3b-instruct
+bash scripts/experimentos/exp01_qwen05b_topk5.sh
 ```
 
-Se quiser usar outro modelo de juiz, informe `--ragas-llm-model` e `--ragas-embedding-model` no comando, ou configure `RAGAS_LLM_MODEL` e `RAGAS_EMBEDDING_MODEL` no ambiente.
+Rodar todos sequencialmente (com cronometragem):
 
-### Exemplo de execucao validada
+```bash
+bash scripts/experimentos/rodar_todos.sh
+```
 
-Na execucao realizada em 27/04/2026 com backend/pdf/artigoteste.pdf e backend/evaluation/dataset_exemplo.json, o pipeline gerou o arquivo backend/evaluation/results.csv com os resultados por pergunta. Os valores medios obtidos foram:
+Cada execução gera `results/<exp>.csv` (métricas) e `results/<exp>.log` (saída + tempo).
 
-- Answer Precision: 0.0429
-- Answer Recall: 0.2727
-- Answer F1: 0.0741
-- Retrieval Precision: 0.2000
-- Retrieval Recall: 0.5000
-- Retrieval F1: 0.2857
-- Retrieval MRR: 0.2500
+### Matriz de experimentos
 
-Isso documenta que a avaliacao foi executada de ponta a ponta e tambem evidencia os pontos de fragilidade do sistema, principalmente na qualidade da resposta final e na relevancia dos trechos recuperados.
+| Script | Modelo Juiz | top-k | Timeout | Objetivo |
+|---|---|---|---|---|
+| `exp01_qwen05b_topk5.sh` | qwen2.5:0.5b | 5 | 300s | Baseline rápido |
+| `exp02_qwen15b_topk5.sh` | qwen2.5:1.5b | 5 | 600s | Juiz mais robusto |
+| `exp03_llama32_topk5.sh` | llama3.2:latest | 5 | 900s | Baseline 3.2B |
+| `exp04_qwen05b_topk3.sh` | qwen2.5:0.5b | 3 | 300s | Menos contexto |
+| `exp05_qwen05b_topk10.sh` | qwen2.5:0.5b | 10 | 300s | Mais contexto |
+| `exp06_qwen05b_sem_ragas.sh` | — | 5 | — | Apenas métricas clássicas |
+
+### Adicionar novo experimento
+
+1. Copie um script existente em `scripts/experimentos/`.
+2. Renomeie seguindo o padrão `expNN_<modelo>_<config>.sh`.
+3. Ajuste `--ragas-llm-model`, `--top-k`, `--ragas-timeout`, etc.
+4. Mude `--output` para `results/<nome>.csv`.
+5. Adicione a entrada na matriz acima e em `rodar_todos.sh`.

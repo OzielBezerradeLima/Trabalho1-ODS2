@@ -3,8 +3,11 @@ import csv
 import json
 import os
 import sys
+import math
 from datetime import datetime
 from pathlib import Path
+
+import pandas as pd
 
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -34,6 +37,24 @@ def parse_args():
         default=os.getenv("RAGAS_EMBEDDING_MODEL", "nomic-embed-text"),
         help="Modelo de embeddings Ollama usado pelo RAGAS",
     )
+    parser.add_argument(
+        "--ragas-timeout",
+        type=int,
+        default=int(os.getenv("RAGAS_TIMEOUT", "120")),
+        help="Timeout em segundos para cada operacao do RAGAS",
+    )
+    parser.add_argument(
+        "--ragas-max-workers",
+        type=int,
+        default=int(os.getenv("RAGAS_MAX_WORKERS", "1")),
+        help="Numero de workers paralelos do RAGAS (1 recomendado para Ollama local)",
+    )
+    parser.add_argument(
+        "--ragas-max-retries",
+        type=int,
+        default=int(os.getenv("RAGAS_MAX_RETRIES", "2")),
+        help="Numero maximo de tentativas por operacao do RAGAS",
+    )
     return parser.parse_args()
 
 
@@ -54,12 +75,14 @@ def extract_ragas_scores(result_frame):
     for _, row in result_frame.iterrows():
         row_scores = {}
         for column in metric_columns:
-            row_scores[f"ragas_{column}"] = float(row[column])
+            value = row[column]
+            row_scores[f"ragas_{column}"] = float(value) if pd.notna(value) else None
         rows_scores.append(row_scores)
 
     averages = {}
     for column in metric_columns:
-        averages[f"ragas_{column}_mean"] = float(result_frame[column].mean())
+        numeric_values = [float(value) for value in result_frame[column].tolist() if pd.notna(value)]
+        averages[f"ragas_{column}_mean"] = sum(numeric_values) / len(numeric_values) if numeric_values else None
 
     return {
         "rows": rows_scores,
@@ -67,24 +90,35 @@ def extract_ragas_scores(result_frame):
     }
 
 
-def optional_ragas_scores(rows, llm_model, embedding_model):
+def build_ragas_dataset_payload(rows):
+    return {
+        "question": [row["question"] for row in rows],
+        "answer": [row["predicted_answer"] for row in rows],
+        "retrieved_contexts": [row["retrieved_contexts"] for row in rows],
+        "ground_truth": [row["expected_answer"] for row in rows],
+    }
+
+
+def format_metric_value(value):
+    if value is None:
+        return "indisponivel"
+    if isinstance(value, float) and math.isnan(value):
+        return "indisponivel"
+    return f"{value:.4f}"
+
+
+def optional_ragas_scores(rows, llm_model, embedding_model, timeout_seconds, max_workers=1, max_retries=2):
     try:
         from datasets import Dataset
         from langchain_ollama import ChatOllama, OllamaEmbeddings
         from ragas import evaluate
+        from ragas.run_config import RunConfig
         from ragas.metrics import answer_relevancy, context_precision, context_recall, faithfulness
     except Exception as error:
         print(f"RAGAS indisponivel neste ambiente: {error}")
         return {}
 
-    ragas_dataset = Dataset.from_dict(
-        {
-            "question": [row["question"] for row in rows],
-            "answer": [row["predicted_answer"] for row in rows],
-            "contexts": [row["retrieved_contexts"] for row in rows],
-            "ground_truth": [row["expected_answer"] for row in rows],
-        }
-    )
+    ragas_dataset = Dataset.from_dict(build_ragas_dataset_payload(rows))
 
     llm = ChatOllama(model=llm_model, temperature=0)
     embeddings = OllamaEmbeddings(model=embedding_model)
@@ -95,6 +129,12 @@ def optional_ragas_scores(rows, llm_model, embedding_model):
             metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
             llm=llm,
             embeddings=embeddings,
+            run_config=RunConfig(
+                timeout=timeout_seconds,
+                max_workers=max_workers,
+                max_retries=max_retries,
+                max_wait=30,
+            ),
         )
     except Exception as error:
         print(f"Falha ao executar RAGAS com Ollama local: {error}")
@@ -104,7 +144,9 @@ def optional_ragas_scores(rows, llm_model, embedding_model):
 
 
 def run_evaluation(args):
-    os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    output_directory = os.path.dirname(args.output)
+    if output_directory:
+        os.makedirs(output_directory, exist_ok=True)
 
     collection_name = f"evaluation-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     persist_directory = os.path.join("./db/chroma_db", collection_name)
@@ -160,11 +202,18 @@ def run_evaluation(args):
                 "retrieval_recall": retrieval_scores["recall"],
                 "retrieval_f1": retrieval_scores["f1"],
                 "retrieval_mrr": mrr_at_k(retrieved_contexts, expected_terms),
-                "retrieved_contexts": " ||| ".join(retrieved_contexts),
+                "retrieved_contexts": retrieved_contexts,
             }
         )
 
-    ragas_scores = optional_ragas_scores(rows, args.ragas_llm_model, args.ragas_embedding_model) if args.use_ragas else {}
+    ragas_scores = optional_ragas_scores(
+        rows,
+        args.ragas_llm_model,
+        args.ragas_embedding_model,
+        args.ragas_timeout,
+        args.ragas_max_workers,
+        args.ragas_max_retries,
+    ) if args.use_ragas else {}
 
     with open(args.output, "w", newline="", encoding="utf-8") as csv_file:
         fieldnames = [
@@ -196,6 +245,7 @@ def run_evaluation(args):
 
         for index, row in enumerate(rows):
             row_data = dict(row)
+            row_data["retrieved_contexts"] = " ||| ".join(row["retrieved_contexts"])
             if ragas_scores:
                 row_data.update(ragas_scores["rows"][index])
             writer.writerow(row_data)
@@ -221,10 +271,12 @@ def run_evaluation(args):
     print(f"Retrieval MRR medio: {averages['retrieval_mrr']:.4f}")
     if ragas_scores:
         print("RAGAS habilitado com metricas adicionais.")
-        print(f"RAGAS Faithfulness medio: {ragas_scores['averages']['ragas_faithfulness_mean']:.4f}")
-        print(f"RAGAS Answer Relevancy medio: {ragas_scores['averages']['ragas_answer_relevancy_mean']:.4f}")
-        print(f"RAGAS Context Precision medio: {ragas_scores['averages']['ragas_context_precision_mean']:.4f}")
-        print(f"RAGAS Context Recall medio: {ragas_scores['averages']['ragas_context_recall_mean']:.4f}")
+        print(f"RAGAS Faithfulness medio: {format_metric_value(ragas_scores['averages']['ragas_faithfulness_mean'])}")
+        print(f"RAGAS Answer Relevancy medio: {format_metric_value(ragas_scores['averages']['ragas_answer_relevancy_mean'])}")
+        print(f"RAGAS Context Precision medio: {format_metric_value(ragas_scores['averages']['ragas_context_precision_mean'])}")
+        print(f"RAGAS Context Recall medio: {format_metric_value(ragas_scores['averages']['ragas_context_recall_mean'])}")
+        if all(value is None for value in ragas_scores["averages"].values()):
+            print("Nenhuma metricas RAGAS valida foi calculada. Verifique se o modelo juiz existe no Ollama e se o serviço esta ativo.")
     print(f"CSV salvo em: {args.output}")
 
 

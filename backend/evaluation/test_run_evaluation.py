@@ -1,6 +1,6 @@
 import pandas as pd
 
-from backend.evaluation.run_evaluation import extract_ragas_scores
+from backend.evaluation.run_evaluation import build_ragas_dataset_payload, extract_ragas_scores
 
 
 def test_extract_ragas_scores_builds_row_scores_and_averages():
@@ -28,3 +28,20 @@ def test_extract_ragas_scores_builds_row_scores_and_averages():
     assert scores["rows"][1]["ragas_answer_relevancy"] == 0.25
     assert scores["averages"]["ragas_faithfulness_mean"] == 0.5
     assert scores["averages"]["ragas_context_precision_mean"] == 0.625
+
+
+def test_build_ragas_dataset_payload_keeps_contexts_as_lists():
+    rows = [
+        {
+            "question": "Q1",
+            "predicted_answer": "A1",
+            "retrieved_contexts": ["trecho 1", "trecho 2"],
+            "expected_answer": "R1",
+        }
+    ]
+
+    payload = build_ragas_dataset_payload(rows)
+
+    assert payload["retrieved_contexts"] == [["trecho 1", "trecho 2"]]
+    assert payload["question"] == ["Q1"]
+    assert payload["answer"] == ["A1"]

@@ -1,0 +1,210 @@
+question,expected_answer,predicted_answer,answer_precision,answer_recall,answer_f1,retrieval_precision,retrieval_recall,retrieval_f1,retrieval_mrr,retrieved_contexts,ragas_faithfulness,ragas_answer_relevancy,ragas_context_precision,ragas_context_recall
+Quais sao os niveis de carga mencionados no documento?,O documento descreve os niveis de carga e suas caracteristicas operacionais.,"A carga mencionada no documento refere-se principalmente à:
+
+1. Carga de transtornos mentais: O texto informa que cerca de 450 milhões de pessoas sofrem transtornos mentais ou de comportamento no mundo atual.
+
+2. Crescimento da carga de transtornos mentais: O documento destaca que há um ""crescente carga de transtornos mentais"" e um ""crescente 'desnível de tratamento'"".
+
+3. Desenvolvimento de estigma e discriminação: O texto menciona que muitas pessoas com transtornos mentais são ""vítimas por causa de sua doença"", ""alvos de estigma e discriminação"".
+
+4. Prevalência de transtornos mentais: O documento destaca que 9,8% da população de 3.800 pessoas em Ribeirão das Neves apresentaram transtornos mentais.
+
+Estes são os principais níveis de carga mencionados no documento, referindo-se especificamente à prevalência de transtornos mentais e à situação de pessoas com esses transtornos.",0.08571428571428572,0.5454545454545454,0.14814814814814814,0.0,0.0,0.0,0.0,"de desinstitucionalização no Brasil e em outros países do ocidente Bragança 
+(2013) citado por Sadigursky (1998). 
+Lamentavelmente, na maior parte do mundo, longe está de ser 
+atribuída à saúde mental  e aos transtornos mentais a mesma importância dada 
+à saúde física.  Em vez disso, eles ficam em geral ignorados ou 
+negligenciados. Devido em parte a isso, o mundo está padecendo de uma 
+crescente carga de transtornos mentais e um crescente “desnível de 
+tratamento”. Hoje, cerca de 450 milhões de pessoas sofrem transtornos 
+mentais ou de comportamento, mas apenas uma pequena minoria delas 
+recebe mesmo o tratamento mais básico. Nos países em desenvolvimento, é 
+ 10 
+ 
+ 
+deixada à maioria das pessoas com transtornos mentais graves a tarefa de 
+carregar como puderem o seu fardo particular de depressão, demência, 
+esquizofrenia e dependência de substâncias. Em termos globais, muitos se 
+transformam em vítimas por causa de sua doença e se convertem em alvos de 
+estigma e discriminação. ||| estigma e discriminação. 
+Sabemos hoje que a maioria das doenças mentais e físicas é 
+influenciada por uma combinação de fatores biológicos, psicológicos e sociais. 
+Sabemos que os transtornos mentais têm sua base no cérebro. Sabemos que 
+eles afetam pessoas de todas as idades, em todos os países, e que causam 
+sofrimento às famílias e comunidades, tanto como aos indivíduos. E sabemos 
+que, na maioria dos casos, podem ser diagnosticados e tratados de uma forma 
+efetiva em relação ao custo. Como resultado de nosso entendimento, os 
+portadores de transtornos mentais e comportamentais têm hoje uma nova 
+esperança de levar vidas plenas e produtivas nas respectivas comunidades 
+(OMS, 2001). 
+O Programa Saúde da Família (PSF) foi implantado no Brasil, pelo 
+Ministério da Saúde em 1994. É conhecido hoje como “Estratégia de Saúde da 
+Família”, por não se tratar mais apenas de um “programa”. A Estratégia de 
+Saúde da Família visa a reversão do modelo assistencial vigente, onde ||| Atenção Básica em Saúde da Família, no primeiro semestre de 2014. Foi 
+realizado um diagnóstico situacional para identificar o número de pacientes 
+com transtornos mentais, como objeto dessa pesquisa. As informações foram 
+obtidas através dos sistemas de informação, os cadernos de registros da 
+equipe e o auxílio dos ACS. 
+Com o diagnóstico situacional da área foi possível levantar o número 
+total de pessoas atendidas pela equipe, as faixas etárias de acordo com o 
+sexo, e as doenças prevalentes na população. Utilizou-se o método de 
+Planejamento Estratégico Situacional (PES), que permite a detecção imediata 
+de problemas e o planejamento de estratégias para suas resoluções. Os 
+principais problemas encontrados na área estudada foram risco aumentado 
+para doenças cardiovasculares, problemas psiquiátricos, alcoolismo e uso de 
+drogas ilícitas, falta de lazer nos bairros, falta de saneamento básico em 
+determinados locais, depósito de lixo em alguns lotes vagos. ||| 17 
+ 
+ 
+compreendem 9,8% desta população de 3.800 pessoas. 
+Os principais transtornos mentais identificados são depressão mental, 
+distúrbio da ansiedade e/ou insônia, psicoses e neuroses, alcoolismo e outras 
+drogas, senilidade. 
+ 
+Fonte: Secretaria Municipal de Ribeirão das Neves (2013). 
+ 
+Fonte: Secretaria Municipal de Ribeirão das Neves (2013). 
+Principais transtornos mentais identificados na ESF Areias I
+Depressão
+Distúrbio de 
+ansiedade/insonia
+Alcoolismo e outras drogas
+Psicose e neurose
+Senilidade
+0-18
+18-24
+25-39
+40-64
+65 e mais
+0
+500
+1000
+1500
+2000
+Distribição sexo/faixa etária
+População
+Homens
+Mulheres
+ 18 
+ 
+ 
+2 JUSTIFICATIVA 
+ 
+Tendo em vista o grande número de pacientes portadores de 
+transtornos mentais e a crescente procura dos mesmos pela Unidade Básica 
+de Saúde uma vez que a mesma é a porta de entrada do SUS é que surgiu a 
+necessidade de realizar o presente estudo. 
+Há duas décadas, por meio do  Programa Saúde da Família (PSF); o ||| Foi identificado uma maior prevalência de distúrbio da ansiedade e 
+depressão sendo a predominância em mulheres de numa faixa etária de 40 a 
+64 anos e em seu maior número casadas. Este resultado pode ser relacionado 
+com algumas causas identificadas do problema como: falta de atividade e 
+ 30 
+ 
+ 
+perspectiva de vida da população feminina e desestrutura familiar. 
+Sendo a ESF uma unidade do SUS permeada por ações de prevenção, 
+promoção e recuperação da saúde e, além disso, que tem como foco dos 
+acontecimentos a família, é de fundamental importância que as discussões 
+sejam realizadas de forma a promover a prevenção e sistematizar todas as 
+atividades propostas para efetivação do plano de ação. 
+ 
+6.6  Explicação do Problema 
+ 
+ 
+Na ESF Areias I em Ribeirão das Neves, existe um grande número de 
+pacientes portadores de transtornos mentais de acordo com diagnóstico 
+situacional realizado no ano de 2013 na área de abrangência da equipe.",,,,
+Qual criterio principal e usado para classificar os niveis?,A classificacao dos niveis considera variacoes de demanda e faixa de operacao.,Não encontrei essa informação no documento fornecido.,0.0,0.0,0.0,0.4,1.0,0.5714285714285715,0.5,"comunidade; prestar uma assistência universalizada, com descentralização de 
+decisões; e contar com bases territoriais definidas para a atuação, vendo a 
+família e seu espaço social como núcleo básico de abordagem no atendimento 
+à saúde. 
+Em Ribeirão das Neves, especificamente na área de abrangência da 
+ESF Areias I, há um grande número de usuários que fazem uso de 
+benzodiazepínicos e que necessitam de acompanhamento psiquiátrico. Em 
+grande parte são indivíduos que possuem depressão e também indivíduos que 
+fazem uso de álcool e de outras drogas. E como no momento não dispomos de 
+profissional psiquiatra para atendimento de todos os casos; dessa forma este 
+estudo será de grande importância para a elaboração de um plano de ação que 
+será realizado na ESF em que trabalho para a prevenção, promoção e 
+recuperação da saúde desses indivíduos. 
+ 
+ 
+ 19 
+ 
+ 
+3 OBJETIVOS 
+ 
+3.1 Objetivo Geral 
+ 
+Propor um plano de ação para melhorar e otimizar a assistência  aos ||| Atenção Básica em Saúde da Família, no primeiro semestre de 2014. Foi 
+realizado um diagnóstico situacional para identificar o número de pacientes 
+com transtornos mentais, como objeto dessa pesquisa. As informações foram 
+obtidas através dos sistemas de informação, os cadernos de registros da 
+equipe e o auxílio dos ACS. 
+Com o diagnóstico situacional da área foi possível levantar o número 
+total de pessoas atendidas pela equipe, as faixas etárias de acordo com o 
+sexo, e as doenças prevalentes na população. Utilizou-se o método de 
+Planejamento Estratégico Situacional (PES), que permite a detecção imediata 
+de problemas e o planejamento de estratégias para suas resoluções. Os 
+principais problemas encontrados na área estudada foram risco aumentado 
+para doenças cardiovasculares, problemas psiquiátricos, alcoolismo e uso de 
+drogas ilícitas, falta de lazer nos bairros, falta de saneamento básico em 
+determinados locais, depósito de lixo em alguns lotes vagos. ||| parcerias e sensibilização dos agentes responsáveis: gestores, família, 
+profissionais de saúde e os próprios doentes mentais. 
+Faz-se necessário a mudança de se fazer saúde mental e da forma de 
+atuar tanto para os profissionais das equipes de saúde da família quanto para a 
+equipe de saúde mental propiciando e aumentando a interação entre os dois 
+setores e deste dois com a família e comunidade, pois é no seio familiar que 
+acontecem as dinâmicas e os conflitos do cotidiano. 
+ 
+             
+ 
+ 
+ 
+ 
+ 33 
+ 
+ 
+REFERÊNCIAS 
+ 
+1. AMARANTE, P. A constitução de novas práticas no campo da atenção 
+psicossocial: análise de dois projetos pioneiros na reforma psiquiátrica 
+no Brasil. Saúde em debate, v.25, n:58: p. 26-34, 2001. 
+ 
+2. ANDRADE, L. et al. Epidemiologia dos transtornos psiquiátricos na mulher. Rev 
+psiquiatria clínica. 2006. 
+ 
+3. BASTOS, A. B. A técnica de grupos-operativos à luz de Pichon-Rivière e 
+Henri 
+Wallon; 
+Izique, 
+2010. 
+Disponível 
+em: ||| uma única matriz. Compreender o mundo atual nos direciona, com mais 
+frequência, a percorrer caminhos diversos: o social, cultural, biológico, 
+econômico e psíquico. Entretanto, ainda existe a tendência a buscarmos a 
+causa biológica como o fator desencadeante da maioria das doenças em 
+detrimento de outras causas de igual  importância. Mas podemos afirmar que 
+qualquer doença só pode ser entendida quando inserida na sociedade em que 
+ocorre, considerando a classe social do indivíduo (PEREIRA, 2013). 
+Os estudos epidemiológicos em saúde mental propiciam compreender 
+mais claramente a frequência com que esses transtornos ocorrem na 
+população em geral, avaliar suas consequências diretas e indiretas, em nível 
+individual, familiar e social, além de trazer à tona suas associações com 
+variáveis sócio-demográficas a fim de orientar o reconhecimento de grupos de 
+risco (GONÇALVES; KAPCZINSK, 2008 apud PEREIRA, 2013). 
+Foi identificado uma maior prevalência de distúrbio da ansiedade e ||| população. As práticas da ESF visam a ter como foco do trabalho a família, 
+assim como possuir ações de caráter preventivo sobre a demanda. Dessa 
+forma, constitui  prática menos reducionista sobre a saúde, avançando para 
+além da simples intervenção médica, que busca a integração com a 
+comunidade, em  atuação interdisciplinar dos profissionais que compõem as 
+equipes de saúde da família (GIACOMOZZI; LACERDA, 2006 apud BRASIL, 
+2003). 
+O Programa Saúde da Família (PSF) visa desenvolver a prevenção e 
+promoção da saúde na comunidade, mediante ação assertiva com a 
+população. Esse modelo de atuação prioriza a atenção primária à saúde, como 
+alternativa àquela centrada exclusivamente na doença (BRASIL, 2006). No 
+período de 1994 a 2005, o PSF foi implantado e disseminado por diversas 
+regiões do país, chegando, em 2005, a uma cobertura que atendia 78,6 
+milhões de pessoas. O programa é desenvolvido por uma equipe básica 
+ 26",,0.4400805327767488,,
